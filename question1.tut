@@ -1,0 +1,64 @@
+proof q11 : (?x:t. A => B(x)) => (A => ?x:t. B(x)) =
+begin
+  [ ?x:t. A => B(x);
+
+    [ A;
+
+      [ c:t, A => B(c);
+        B(c);
+        ?x:t. B(x);
+      ];
+
+      ?x:t. B(x);
+    ];
+
+    A => ?x:t. B(x);
+  ];
+
+  (?x:t. A => B(x)) => (A => ?x:t. B(x));
+end;
+
+
+
+proof q14 : (?x:t. (P(x) => A)) => ((!x:t. P(x)) => A) =
+begin
+  [ ?x:t. (P(x) => A);
+
+    [ !x:t. P(x);
+
+      [ c:t, P(c) => A;
+        P(c);
+        A;
+      ];
+
+      A;
+    ];
+
+    (!x:t. P(x)) => A;
+  ];
+
+  (?x:t. (P(x) => A)) => ((!x:t. P(x)) => A);
+end;
+
+
+
+proof q16 : ~(?x:t. B(x)) => (!x:t. ~B(x)) =
+begin
+  [ ~(?x:t. B(x));
+
+    [ b:t;
+
+      [ B(b);
+        ?x:t. B(x);
+        (?x:t. B(x)) => F;
+        F;
+      ];
+
+      ~B(b);
+    ];
+
+    !x:t. ~B(x);
+  ];
+
+  ~(?x:t. B(x)) => (!x:t. ~B(x));
+end;

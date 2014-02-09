@@ -1,0 +1,66 @@
+proof q21 : (A & ?x:t. B x) => (?x:t. A & B x) =
+begin
+  [ A & ?x:t. B x;
+
+    ?x:t. B x;
+    [ b:t, B b;
+      A;
+      A & B b;
+      ?x:t. A & B x;
+    ];
+
+    ?x:t. A & B x;
+  ];
+  (A & ?x:t. B x) => (?x:t. A & B x)
+end;
+
+
+proof q22 : (?x:t. A & B x) => (A & ?x:t. B x) =
+begin
+  [ ?x:t. A & B x;
+    [ b:t, A & B b;
+      A;
+      B b;
+      ?x:t. B x;
+      A & ?x:t. B x;
+    ];
+    A & ?x:t. B x;
+  ];
+  (?x:t. A & B x) => (A & ?x:t. B x);
+end;
+
+proof q23 : (A | !x:t. B x) => (!x:t. A | B x) =
+begin
+  [ A | !x:t. B x;
+
+    [ a:t;
+
+      [ A;
+        A | B a;
+      ];
+
+      [ !x:t. B x;
+        B a;
+        A | B a;
+      ];
+
+      A | B a;
+    ];
+
+    !x:t. A | B x;
+  ];
+  (A | !x:t. B x) => (!x:t. A | B x);
+end;
+
+
+term q21 : (A & ?x:t. B x) => (?x:t. A & B x) =
+fn t => (fst (snd t), (fst t, snd (snd t)));
+
+term q22 : (?x:t. A & B x) => (A & ?x:t. B x) =
+fn t => (fst (snd t), (fst t, (snd (snd t))));
+
+term q23 : (A | !x:t. B x) => (!x:t. A | B x) =
+fn e => fn c => case e of
+                  inl a => inl a
+                | inr f => inr (f c)
+                end;

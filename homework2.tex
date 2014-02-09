@@ -1,0 +1,430 @@
+\documentclass[11pt]{article}
+
+\usepackage{float}
+\usepackage{fullpage}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{palatino}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amssymb}
+\usepackage{parskip}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{proof}
+\usepackage{xcolor}
+
+
+\newcommand{\nand}{\bar{\wedge}}
+
+\begin{document}
+
+\title{COMP527 - Logic and Computation \\ Homework 2}
+\author{
+  Vincent Foley-Bourgon <vincent.foley-bourgon@mail.mcgill.ca> \\
+  Carl Patenaude-Poulin <carl.patenaudepoulin@mail.mcgill.ca>
+}
+
+\maketitle
+
+\section{Exercise 1}
+
+Propositions 1, 4, and 6 have proofs in Tutch, see {\it question1.tut} for
+the solutions.  Propositions 2, 3, and 5 cannot be proved using
+first-order logic.  We will show their partial derivation trees, and
+show where the proof cannot continue.
+
+\subsection{Proposition 2}
+
+\[
+\infer[\supset I^u]
+  {[\exists x:\tau. A \supset P(x)] \supset [A \supset \forall x:\tau. P(x)]}
+  {
+    \infer[\supset I^v]
+      {A \supset \forall x:\tau. P(x)}
+      {
+         \infer[\exists E^{w,a}]
+            {\forall x:\tau. P(x)}
+            {
+              \infer[u]{\exists x:\tau. A \supset P(x)}{} &
+              \infer[\forall I^b]
+                 {\forall x:\tau. P(x)}
+                 {
+                    \deduce{P(b)}{?}
+                 }
+            }
+      }
+  }
+\]
+
+
+
+In the upper-right branch, we cannot use the variable $b$ to properly
+introduce the {\it for all} connective.
+
+
+
+\subsection{Proposition 3}
+
+\[
+\infer[\supset I^u]
+  {[(\forall x:\tau. P(x)) \supset A] \supset [\exists x:\tau. P(x) \supset A]}
+  {
+    \infer[\exists I]
+      {\exists x:\tau. P(x) \supset A}
+      {
+        \infer{a:\tau}{} &
+        \infer[\supset I^v]
+          {P(a) \supset A}
+          {
+            \infer[\supset E]
+              {A}
+              {
+                \infer[u]{(\forall x:\tau. P(x)) \supset A}{} &
+                \infer[\forall I^b]
+                  {\forall x:\tau. P(x)}
+                  {
+                    \deduce{P(b)}{\mathcal{?}}
+                  }
+              }
+          }
+      }
+  }
+\]
+
+Since we cannot prove $P(b)$, this proof cannot be completed.
+
+\subsection{Proposition 5}
+
+\[
+\infer[\supset I^u]
+  {\neg(\forall x:\tau. B(x)) \supset \exists x:\tau. \neg B(x)}
+  {
+    \infer[\exists I]
+      {\exists x:\tau. \neg B(x)}
+      {
+        \infer{b:\tau}{} &
+        \infer[\supset I^v]
+          {\neg B(b)}
+          {
+            \infer[\supset E]
+              {\bot}
+              {
+                \infer[u]{\neg(\forall x:\tau. B(x))}{} &
+                \infer[\forall I^c]
+                  {\forall x:\tau. B(x)}
+                  {
+                    \deduce{B(c)}{?}
+                  }
+              }
+          }
+      }
+  }
+\]
+
+Same thing as in the previous proposition, we cannot prove $B(c)$.
+
+\section{Exercise 2}
+
+See the file {\it question2.tut} for the proofs and proof terms.
+
+
+\section{Exercise 3}
+
+\subsection{Task 1}
+% -- introducing the isomorphism f between A and B in scope y
+% let f = (fn (a:A) => (... : B) and fn (b:B) => (... : A)) in y
+% -- using the left elimination rule; binding the name `a` to (f b) in y
+% let a = f b in y
+% -- using the right elimination rule; binding the name `b` to (f^(-1) a) in y
+% let (f b) = a in y
+\[
+\infer[\equiv I^{u,v}]
+   { \langle a \to \phi_1; b \to \phi_2 \rangle: \mathbf{A \equiv B}}
+   {
+     \infer*{\phi_1:\mathbf{B}}{\infer[u]{a:\mathbf{A}}{}} &
+     \infer*{\phi_2:\mathbf{A}}{\infer[v]{b:\mathbf{B}}{}}
+   }
+\]
+
+\[
+\infer[\equiv E_l]
+  {\phi_1:\mathbf{B}}
+  {
+    \langle a \to \phi_1; b \to \phi_2 \rangle: \mathbf{A \equiv B} &
+    a:\mathbf{A}
+  }
+\]
+
+\[
+\infer[\equiv E_r]
+  {\phi_2:\mathbf{A}}
+  {
+     \langle a \to \phi_1; b \to \phi_2 \rangle: \mathbf{A \equiv B} &
+    b:\mathbf{B}
+  }
+\]
+
+
+\subsection{Task 2}
+
+\subsubsection{Reduction rules}
+
+\begin{align*}
+   \langle a \to \phi_1; b \to \phi_2 \rangle x &\Longrightarrow_r [x/a]\phi_1: B \\
+   \langle a \to \phi_1; b \to \phi_2 \rangle^{-1} y) &\Longrightarrow_r [y/b]\phi_2: A
+\end{align*}
+
+\subsubsection{Expansion rules}
+
+\begin{align*}
+ &\langle a_1 \to \phi_1; b_1 \to \phi_2  \rangle
+ \\&\Longrightarrow_e\\
+ &\langle a_1 \to  \langle a_2 \to \phi_1; b_2 \to \phi_2 \rangle~a_1 ;
+         b_1 \to  \langle a_2 \to \phi_1; b_2 \to \phi_2 \rangle ^{-1}~b_1
+ \rangle
+\end{align*}
+
+\subsection{Task 3}
+
+\subsubsection{Proof on $\equiv E_l$}
+
+\[
+\mathcal{D} =
+\infer
+  {[\Gamma, x:A, \Gamma'] \vdash C}
+  {
+    \deduce{[\Gamma, x:A, \Gamma'] \vdash B \equiv C}{\mathcal{D}_1} &
+    \deduce{[\Gamma, x:A, \Gamma'] \vdash B}{\mathcal{D}_2}
+  }
+\]
+
+\begin{align*}
+  & \Gamma \vdash A \text{ : by assumption} \\
+  & [\Gamma, \Gamma'] \vdash B \equiv C \text{ : by i.h. on $\mathcal{D}_1$ and assumption} \\
+  & [\Gamma, \Gamma'] \vdash B \text{ : by i.h. on $\mathcal{D}_2$ and assumption} \\
+  & [\Gamma, \Gamma'] \vdash C \text{ : by $\equiv E_l$}
+\end{align*}
+
+
+\subsubsection{Proof on $\equiv E_r$}
+
+\[
+\mathcal{D} =
+\infer
+  {[\Gamma, x:A, \Gamma'] \vdash B}
+  {
+    \deduce{[\Gamma, x:A, \Gamma'] \vdash B \equiv C}{\mathcal{D}_1} &
+    \deduce{[\Gamma, x:A, \Gamma'] \vdash C}{\mathcal{D}_2}
+  }
+\]
+
+\begin{align*}
+  & \Gamma \vdash A \text{ : by assumption} \\
+  & [\Gamma, \Gamma'] \vdash B \equiv C \text{ : by i.h. on $\mathcal{D}_1$ and assumption} \\
+  & [\Gamma, \Gamma'] \vdash C \text{ : by i.h. on $\mathcal{D}_2$ and assumption} \\
+  & [\Gamma, \Gamma'] \vdash B \text{ : by $\equiv E_r$}
+\end{align*}
+
+\subsubsection{Proof on $\equiv I^{v,w}$}
+
+\[
+\mathcal{D} =
+\infer
+  {[\Gamma, u:A, \Gamma'] \vdash B \equiv C}
+  {
+    \deduce{[\Gamma, u:A, \Gamma', v:B] \vdash C}{\mathcal{D}_1} &
+    \deduce{[\Gamma, u:A, \Gamma', w:C] \vdash B}{\mathcal{D}_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash A \text{ : by assumption} \\
+  & [\Gamma, \Gamma', v:B] \vdash C \text{ : by i.h using $\mathcal{D}_1$ and assumptions} \\
+  & [\Gamma, \Gamma', w:C] \vdash B \text{ : by i.h using $\mathcal{D}_2$ and assumptions} \\
+  & [\Gamma, \Gamma'] \vdash B \equiv C \text{ : by $\equiv I^{v,w}$}
+\end{align*}
+
+
+
+\section{Exercise 4}
+
+\subsection{$\wedge I$}
+\[
+\infer
+  {\Gamma \vdash A \wedge B = C \wedge D}
+  {
+    \deduce{\Gamma \vdash \langle M,N \rangle : A \wedge B}{E_1} &
+    \deduce{\Gamma \vdash \langle M,N \rangle : C \wedge D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash M:A \text{ by } \wedge I \\
+  & \Gamma \vdash M:C \text{ by } \wedge I \\
+  & \Gamma \vdash A=C \text{ by i.h. on $E_1$ and $E_2$} \\
+  & \Gamma \vdash M:B \text{ by } \wedge I \\
+  & \Gamma \vdash M:D \text{ by } \wedge I \\
+  & \Gamma \vdash B=D \text{ by i.h. on $E_1$ and $E_2$} \\
+  & \Gamma \vdash A \wedge B = C \wedge D
+\end{align*}
+
+\subsection{$\wedge E_l$}
+\[
+\infer
+  {\Gamma \vdash A = C}
+  {
+    \deduce{\Gamma \vdash M: A \wedge B}{E_1} &
+    \deduce{\Gamma \vdash M: C \wedge D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash \text{fst } M : A \text{ by } \wedge E_l \\
+  & \Gamma \vdash \text{fst } M : C \text{ by } \wedge E_l \\
+  & \Gamma \vdash A = C \text{ by i.h. on $E_1$ and $E_2$}
+\end{align*}
+
+
+\subsection{$\wedge E_r$}
+\[
+\infer
+  {\Gamma \vdash B = D}
+  {
+    \deduce{\Gamma \vdash M: A \wedge B}{E_1} &
+    \deduce{\Gamma \vdash M: C \wedge D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash \text{snd } M : B \text{ by } \wedge E_r \\
+  & \Gamma \vdash \text{snd } M : D \text{ by } \wedge E_r \\
+  & \Gamma \vdash B = D \text{ by i.h. on $E_1$ and $E_2$}
+\end{align*}
+
+\subsection{$\supset I^u$}
+
+\[
+\infer
+  {\Gamma \vdash A \supset B = C \supset D}
+  {
+    \deduce{\Gamma \vdash M: A \supset B}{E_1} &
+    \deduce{\Gamma \vdash M: C \supset D}{E_2}
+  }
+\]
+
+\begin{align*}
+  & \Gamma \vdash M = \lambda x:A. N : A \supset B \\
+  & \Gamma \vdash M = \lambda x:C. N : C \supset D \\
+  & [\Gamma, x:A, x:C] \vdash A = C \text { by assumption} \\
+  & \Gamma \vdash N: B \text { by } \supset I^x \\
+  & \Gamma \vdash N: D \text { by } \supset I^x \\
+  & \Gamma \vdash B = D \text { by i.h. on $E_1$ and $E_2$} \\
+  & \Gamma \vdash A \supset B = C \supset D
+\end{align*}
+
+
+\subsection{$\supset E$}
+
+\[
+\infer
+  {\Gamma \vdash B = D}
+  {
+    \deduce{\Gamma \vdash M N: B}{E_1} &
+    \deduce{\Gamma \vdash M N: D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash M : A \supset B \\
+  & \Gamma \vdash N : A  \\
+  & \Gamma \vdash M : C \supset D \\
+  & \Gamma \vdash N : C \\
+  & \Gamma \vdash A = C \text{ by i.h. on $E_1$ and $E_2$} \\
+  & \Gamma \vdash A \supset B = C \supset D \text{ by proof in previous section} \\
+  & \Gamma \vdash M N : B \text{ by } \supset E \\
+  & \Gamma \vdash M N : D \text{ by } \supset E \\
+  & \Gamma \vdash B = D
+\end{align*}
+
+
+\subsection{$\vee I_l$}
+\[
+\infer
+  {\Gamma \vdash A \vee B = C \vee D}
+  {
+    \deduce{\Gamma \vdash \text{inl}^B~M: A \vee B}{E_1} &
+    \deduce{\Gamma \vdash \text{inl}^D~M: C \vee D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash M : A \text{ by } \vee I_l \\
+  & \Gamma \vdash M : C \text{ by } \vee I_l \\
+  & \Gamma \vdash A = C \text{ by i.h. on $E_1$ and $E_2$} \\
+  & \Gamma \vdash B = D \text{ by assumption} \\
+  & \Gamma \vdash A \vee B = C \vee D
+\end{align*}
+
+\subsection{$\vee I_r$}
+\[
+\infer
+  {\Gamma \vdash A \vee B = C \vee D}
+  {
+    \deduce{\Gamma \vdash \text{inr}^A~M: A \vee B}{E_1} &
+    \deduce{\Gamma \vdash \text{inr}^C~M: C \vee D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash M : B \text{ by } \vee I_r \\
+  & \Gamma \vdash M : D \text{ by } \vee I_r \\
+  & \Gamma \vdash B = D \text{ by i.h. on $E_1$ and $E_2$} \\
+  & \Gamma \vdash A = C \text{ by assumption} \\
+  & \Gamma \vdash A \vee B = C \vee D
+\end{align*}
+
+
+\subsection{$\vee E^{u,v}$}
+\[
+\infer
+  {\Gamma \vdash C = D}
+  {
+    \deduce{\Gamma \vdash \text{case } M \text{ of inl}^B~x \to N_1 \| \text{inr}^A~y \to N_2 : C}{E_1} &
+    \deduce{\Gamma \vdash \text{case } M \text{ of inl}^B~x \to N_1 \| \text{inr}^A~y \to N_2 : D}{E_2}
+  }
+\]
+
+
+\begin{align*}
+  & \Gamma \vdash N_1: C \text{ by } \vee E^{u,v} \\
+  & \Gamma \vdash N_2: C \text{ by } \vee E^{u,v} \\
+  & \Gamma \vdash N_1: D \text{ by } \vee E^{u,v} \\
+  & \Gamma \vdash N_2: D \text{ by } \vee E^{u,v} \\
+  & \Gamma \vdash C = D \text{ by i.h on $E_1$ and $E_2$}
+\end{align*}
+
+
+\subsection{$\top I$}
+\[
+\infer
+  {\Gamma \vdash \top = \top}
+  {
+    \deduce{\Gamma \vdash M: \top}{E_1} &
+    \deduce{\Gamma \vdash M: \top}{E_2}
+  }
+\]
+
+Trivial.
+
+
+
+\end{document}
